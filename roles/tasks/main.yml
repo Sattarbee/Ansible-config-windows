@@ -1,2 +1,4 @@
 ---
-# tasks file for roles
+- name: Scan Windows
+  ansible.builtin.include_tasks: windows.yml
+  when: ansible_os_family == "Windows"
