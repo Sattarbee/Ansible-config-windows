@@ -11,6 +11,5 @@
     - name: Build the report
       ansible.builtin.include_role:
         name: build_report_windows
-      apply:
-        delegate_to: windows
-        run_once: true
+      delegate_to: windows
+      run_once: true
