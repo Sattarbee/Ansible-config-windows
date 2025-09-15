@@ -4,12 +4,10 @@
   tasks:
 
     - name: Scan Systems for detailed report
-      ansible.builtin.include_role:
+      include_role:
         name: shadowman_scan_systems
-      when: detailedreport | default(false) | bool
+      when: detailedreport
 
-    - name: Build the report
-      ansible.builtin.include_role:
+    - name: Build the repor
+      include_role:
         name: build_report_windows
-      delegate_to: windows
-      run_once: true
