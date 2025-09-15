@@ -6,11 +6,11 @@
     - name: Scan Systems for detailed report
       ansible.builtin.include_role:
         name: shadowman_scan_systems
-      when: detailedreport == 'True'
+      when: detailedreport | default(false) | bool
 
     - name: Build the report
       ansible.builtin.include_role:
         name: shadowman.reports.build_report_windows
-        apply:
-          delegate_to: windows
-          run_once: true
+      apply:
+        delegate_to: windows
+        run_once: true
