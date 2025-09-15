@@ -1,4 +1,4 @@
 ---
-- name: Scan Linux
-  ansible.builtin.include_tasks: linux.yml
+- name: Scan windows
+  ansible.builtin.include_tasks: windows.yml
   when: ansible_os_family != "Windows"
