@@ -3,6 +3,12 @@
     path: "{{ file_path }}"
     state: directory
 
+- name: Debug variables
+  ansible.builtin.debug:
+    msg:
+      - "file_path={{ file_path }}"
+      - "usesingletemplate={{ usesingletemplate }}"
+
 - name: Create HTML report if jinja include works
   ansible.windows.win_template:
     src: report.j2
@@ -13,7 +19,7 @@
   ansible.windows.win_template:
     src: fullreport.j2
     dest: "{{ file_path }}\\windows.html"
-  when: usesingletemplate
+  when: usesingletemplate == false
 
 - name: Copy CSS directory over
   ansible.windows.win_copy:
