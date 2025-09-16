@@ -200,60 +200,6 @@
         <p>No patch information available.</p>
       {% endif %}
     </div>
-
-    <!-- Package Facts Accordion -->
-    <div class="accordion-header">Package Facts <span class="toggle-icon">&#9654;</span></div>
-    <div class="accordion-content">
-      {% if hostvars[windows_host]['packages'] is defined %}
-      <table>
-        <thead>
-          <tr>
-            <th>Package Name</th>
-            <th>Version</th>
-            <th>Publisher</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for package in hostvars[windows_host]['packages'] %}
-          <tr>
-            <td>{{ package.name }}</td>
-            <td>{{ package.version }}</td>
-            <td>{{ package.publisher }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-      {% else %}
-        <p>No package information available.</p>
-      {% endif %}
-    </div>
-
-    <!-- Services Facts Accordion -->
-    <div class="accordion-header">Services Facts <span class="toggle-icon">&#9654;</span></div>
-    <div class="accordion-content">
-      {% if hostvars[windows_host]['services'] is defined %}
-      <table>
-        <thead>
-          <tr>
-            <th>Display Name</th>
-            <th>Windows Service Name</th>
-            <th>State</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for service in hostvars[windows_host]['services'] %}
-          <tr>
-            <td>{{ service.name }}</td>
-            <td>{{ service.win_svc_name }}</td>
-            <td>{{ service.state }}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-      {% else %}
-        <p>No services information available.</p>
-      {% endif %}
-    </div>
   </div>
   {% endfor %}
 
