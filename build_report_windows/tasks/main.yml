@@ -1,42 +1,39 @@
-- name: Create HTML report if jinja include works
-  ansible.builtin.template:
-    src: report.j2
-    dest: "C:\\Users\\p-sve7fz\\Desktop\\windows.html"
-    owner: root
-    group: root
-    mode: '0644'
-  when: not usesingletemplate
+- name: Ensure report directory exists
+  ansible.windows.win_file:
+    path: "C:\\Users\\p-sve7fz\\Desktop"
+    state: directory
 
-- name: Create HTML report if jinja include doesn't work
-  ansible.builtin.template:
+- name: Debug selected template (forced to fullreport.j2)
+  ansible.builtin.debug:
+    msg: "Using template: fullreport.j2"
+
+# Force usage of fullreport.j2 (ignore usesingletemplate temporarily)
+- name: Create HTML report using fullreport.j2
+  ansible.windows.win_template:
     src: fullreport.j2
     dest: "C:\\Users\\p-sve7fz\\Desktop\\windows.html"
-    owner: root
-    group: root
-    mode: '0644'
-  when: usesingletemplate
 
-- name: Copy CSS over
-  ansible.builtin.copy:
-    src: "css"
-    dest: "C:\\Users\\p-sve7fz\\Desktop"
-    directory_mode: true
-    owner: root
-    group: root
-    mode: '0644'
+- name: Copy CSS directory over
+  ansible.windows.win_copy:
+    src: css
+    dest: "C:\\Users\\p-sve7fz\\Desktop\\css"
+    remote_src: no
+    recurse: yes
 
 - name: Copy logos over
-  ansible.builtin.copy:
+  ansible.windows.win_copy:
     src: "{{ item }}"
-    dest: "C:\\Users\\p-sve7fz\\Desktop"
-    directory_mode: true
-    owner: root
-    group: root
-    mode: '0644'
+    dest: "C:\\Users\\p-sve7fz\\Desktop\\{{ item }}"
+    remote_src: no
   loop:
     - "webpage_logo.png"
     - "redhat-ansible-logo.svg"
     - "server.png"
+
+- name: Restart IIS to reload content
+  ansible.windows.win_shell: iisreset
+  args:
+    warn: false
 
 - name: Display link to inventory report
   ansible.builtin.debug:
