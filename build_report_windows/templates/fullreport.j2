@@ -32,13 +32,22 @@
       margin: 0;
     }
     .status-badge {
-      background-color: #28a745;
-      color: white;
       border-radius: 12px;
       padding: 0.2rem 0.7rem;
       font-size: 0.85rem;
       font-weight: 600;
       margin-left: auto;
+      color: white;
+    }
+    .status-badge.up-to-date {
+      background-color: #28a745;
+    }
+    .status-badge.needs-update {
+      background-color: #ffc107;
+      color: black;
+    }
+    .status-badge.error {
+      background-color: #dc3545;
     }
     .info-line {
       font-size: 0.9rem;
@@ -120,6 +129,39 @@
     .download-csv:hover {
       background-color: #0056b3;
     }
+    /* No results message */
+    #no-results-message {
+      display: none;
+      text-align: center;
+      font-style: italic;
+      margin-top: 2rem;
+      color: #888;
+      font-size: 1.1rem;
+    }
+    /* Tooltip for long descriptions */
+    .description-tooltip {
+      cursor: help;
+      border-bottom: 1px dotted #666;
+      max-width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Responsive */
+    @media (max-width: 600px) {
+      .card {
+        margin: 1rem;
+        padding: 1rem;
+      }
+      .search-input {
+        width: 90%;
+      }
+      .download-csv {
+        float: none;
+        display: block;
+        margin: 1rem auto;
+      }
+    }
   </style>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
@@ -133,14 +175,21 @@
       // Search filter
       $('.search-input').on('input', function(){
         var val = $(this).val().toLowerCase();
+        var visibleCount = 0;
         $('.card').each(function(){
           var hostname = $(this).find('.hostname').text().toLowerCase();
           if(hostname.indexOf(val) > -1){
             $(this).show();
+            visibleCount++;
           } else {
             $(this).hide();
           }
         });
+        if(visibleCount === 0){
+          $('#no-results-message').show();
+        } else {
+          $('#no-results-message').hide();
+        }
       });
 
       // CSV download placeholder (you can integrate your logic here)
@@ -151,7 +200,7 @@
   </script>
 </head>
 <body>
-  <div style="background:#000; padding: 1rem 2rem; color: white; display:flex; justify-content: space-between; align-items: center;">
+  <div style="background:#000; padding: 1rem 2rem; color: white; display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
     <div style="display:flex; align-items:center; gap:10px;">
       <img src="redhat-ansible-logo.svg" alt="Red Hat Ansible" style="height: 40px;">
       <h2 style="margin:0;">Ansible Windows Automation Report</h2>
@@ -163,17 +212,35 @@
     <input type="search" placeholder="Search hosts..." class="search-input" />
   </div>
 
+  <div id="no-results-message">No hosts found matching your search.</div>
+
   {% for windows_host in ansible_play_hosts|sort %}
   <div class="card" data-host="{{ hostvars[windows_host]['inventory_hostname'].split('.')[0] }}">
     <div class="card-header">
       <img src="server.png" alt="Server" class="server-icon"/>
       <p class="hostname">{{ hostvars[windows_host]['inventory_hostname'].split('.')[0] }}</p>
-      <span class="status-badge">Up-to-date</span>
+      <span class="status-badge
+        {% if hostvars[windows_host]['status'] == 'up-to-date' %}
+          up-to-date
+        {% elif hostvars[windows_host]['status'] == 'needs-update' %}
+          needs-update
+        {% elif hostvars[windows_host]['status'] == 'error' %}
+          error
+        {% else %}
+          up-to-date
+        {% endif %}
+      ">
+        {{ hostvars[windows_host]['status']|capitalize|default('Up-to-date') }}
+      </span>
     </div>
     <p class="info-line">
       <strong>Package Manager:</strong> {{ hostvars[windows_host]['package_manager']|default("N/A") }} &nbsp;&nbsp;
       <strong>OS:</strong> {{ hostvars[windows_host]['ansible_distribution']|default("N/A") }} &nbsp;&nbsp;
       <strong>Kernel:</strong> {{ hostvars[windows_host]['ansible_kernel']|default("N/A") }}
+    </p>
+    <p class="info-line">
+      <strong>IP:</strong> {{ hostvars[windows_host]['ansible_default_ipv4']['address']|default("N/A") }} &nbsp;&nbsp;
+      <strong>Uptime:</strong> {{ hostvars[windows_host]['uptime']|default("N/A") }}
     </p>
 
     <!-- Last Patch Info Accordion -->
@@ -193,7 +260,7 @@
             <tr>
               <td>{{ patch.name }}</td>
               <td>{{ patch.installed_date }}</td>
-              <td>{{ patch.description }}</td>
+              <td title="{{ patch.description }}" class="description-tooltip">{{ patch.description }}</td>
             </tr>
           {% endfor %}
           </tbody>
