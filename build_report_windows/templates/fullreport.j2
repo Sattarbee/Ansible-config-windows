@@ -48,6 +48,7 @@
         <th>Hostname</th>
         <th>Operating System</th>
         <th>Required Updates</th>
+        <th>Last Applied Patches</th>
       </tr>
     </thead>
     <tbody>
@@ -56,9 +57,9 @@
         <td>{{ hostvars[windows_host]['inventory_hostname']|default(windows_host) }}</td>
         <td>{{ hostvars[windows_host]['ansible_distribution']|default('N/A') }}</td>
         <td>
-          {% if hostvars[windows_host]['last_patch_info'] is defined and hostvars[windows_host]['last_patch_info'] %}
+          {% if hostvars[windows_host]['required_updates'] is defined and hostvars[windows_host]['required_updates'] %}
             <ul>
-              {% for patch in hostvars[windows_host]['last_patch_info'] %}
+              {% for patch in hostvars[windows_host]['required_updates'] %}
               <li>
                 {{ patch.name }}{% if patch.installed_date %} (Installed: {{ patch.installed_date }}){% endif %}
               </li>
@@ -66,6 +67,19 @@
             </ul>
           {% else %}
             No updates required.
+          {% endif %}
+        </td>
+        <td>
+          {% if hostvars[windows_host]['last_applied_patches'] is defined and hostvars[windows_host]['last_applied_patches'] %}
+            <ul>
+              {% for patch in hostvars[windows_host]['last_applied_patches'] %}
+              <li>
+                {{ patch.name }}{% if patch.installed_date %} (Installed: {{ patch.installed_date }}){% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            No patches applied last time.
           {% endif %}
         </td>
       </tr>
