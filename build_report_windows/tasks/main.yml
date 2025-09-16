@@ -1,7 +1,7 @@
 - name: Create HTML report if jinja include works
   ansible.builtin.template:
     src: report.j2
-    dest: "{{ file_path }}/windows.html"
+    dest: "C:\\Users\\p-sve7fz\\Desktop\\windows.html"
     owner: root
     group: root
     mode: '0644'
@@ -10,7 +10,7 @@
 - name: Create HTML report if jinja include doesn't work
   ansible.builtin.template:
     src: fullreport.j2
-    dest: "{{ file_path }}/windows.html"
+    dest: "C:\\Users\\p-sve7fz\\Desktop\\windows.html"
     owner: root
     group: root
     mode: '0644'
@@ -19,7 +19,7 @@
 - name: Copy CSS over
   ansible.builtin.copy:
     src: "css"
-    dest: "{{ file_path }}"
+    dest: "C:\\Users\\p-sve7fz\\Desktop"
     directory_mode: true
     owner: root
     group: root
@@ -28,7 +28,7 @@
 - name: Copy logos over
   ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "{{ file_path }}"
+    dest: "C:\\Users\\p-sve7fz\\Desktop"
     directory_mode: true
     owner: root
     group: root
