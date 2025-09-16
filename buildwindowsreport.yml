@@ -1,6 +1,6 @@
 ---
 - name: Create Windows Report
-  hosts: windows_servers
+  hosts: windows
   gather_facts: yes
   vars:
     file_path: "C:\\inetpub\\wwwroot"
