@@ -15,7 +15,7 @@
     dest: "{{ file_path }}\\windows.html"
   when: usesingletemplate
 
-- name: Copy CSS over
+- name: Copy CSS folder over
   ansible.windows.win_copy:
     src: css
     dest: "{{ file_path }}\\css"
