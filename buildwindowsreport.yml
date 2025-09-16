@@ -1,7 +1,10 @@
 ---
 - name: Create Windows Report
-  hosts: windows
+  hosts: windows_servers
   gather_facts: yes
+  vars:
+    file_path: "C:\\inetpub\\wwwroot"
+
   tasks:
     - name: Scan Systems for detailed report
       include_role:
