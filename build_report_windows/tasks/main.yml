@@ -1,48 +1,43 @@
-- name: Ensure report directory exists
-  ansible.windows.win_file:
-    path: "{{ file_path }}"
-    state: directory
-
-- name: Debug variables
-  ansible.builtin.debug:
-    msg:
-      - "file_path={{ file_path }}"
-      - "usesingletemplate={{ usesingletemplate }}"
-
 - name: Create HTML report if jinja include works
-  ansible.windows.win_template:
+  ansible.builtin.template:
     src: report.j2
-    dest: "{{ file_path }}\\windows.html"
-  when: usesingletemplate
+    dest: "{{ file_path }}/windows.html"
+    owner: root
+    group: root
+    mode: '0644'
+  when: not usesingletemplate
 
 - name: Create HTML report if jinja include doesn't work
-  ansible.windows.win_template:
+  ansible.builtin.template:
     src: fullreport.j2
-    dest: "{{ file_path }}\\windows.html"
-  when: usesingletemplate == false
+    dest: "{{ file_path }}/windows.html"
+    owner: root
+    group: root
+    mode: '0644'
+  when: usesingletemplate
 
-- name: Copy CSS directory over
-  ansible.windows.win_copy:
-    src: css
-    dest: "{{ file_path }}\\css"
-    remote_src: no
-    recurse: yes
+- name: Copy CSS over
+  ansible.builtin.copy:
+    src: "css"
+    dest: "{{ file_path }}"
+    directory_mode: true
+    owner: root
+    group: root
+    mode: '0644'
 
 - name: Copy logos over
-  ansible.windows.win_copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "{{ file_path }}\\{{ item }}"
-    remote_src: no
+    dest: "{{ file_path }}"
+    directory_mode: true
+    owner: root
+    group: root
+    mode: '0644'
   loop:
     - "webpage_logo.png"
     - "redhat-ansible-logo.svg"
     - "server.png"
 
-- name: Restart IIS to reload content
-  ansible.windows.win_shell: iisreset
-  args:
-    warn: false
-
 - name: Display link to inventory report
   ansible.builtin.debug:
-    msg: "Please go to http://{{ ansible_host }}/windows.html"
+    msg: "Please go to http://{{ ansible_host }}/windows.htm"
