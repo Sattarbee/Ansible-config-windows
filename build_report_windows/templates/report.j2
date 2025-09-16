@@ -72,6 +72,7 @@ collapsible: true
             <th>Windows Device</th>
             <th>Operating System</th>
             <th>Operating System Kernel Version</th>
+            <th>Last Patch Date</th>
         </tr>
     </thead>
     <tbody>
@@ -79,22 +80,22 @@ collapsible: true
         <tr>
             <td class="summary_info">
               <div id="hostname">
-                <p class="hostname"> 
-                  <img class="router_image" src="server.png"> {{ hostvars[windows_host]['inventory_hostname'].split('.')[0] }}</p>
+                <p class="hostname">
+                  <img class="router_image" src="server.png"> {{ hostvars[windows_host]['ansible_hostname'] }}</p>
                 </div>
 {% if detailedreport == 'True' %}
 {% include 'packages.j2' %}
 {% include 'services.j2' %}
 {% endif %}
-</td>
-            <td>{{hostvars[windows_host]['ansible_os_family']|default("none")}}</td>
-            <td>{{hostvars[windows_host]['ansible_distribution']|default("none")}}</td>
+            </td>
+            <td>{{ hostvars[windows_host]['ansible_os_family']|default("none") }}</td>
+            <td>{{ hostvars[windows_host]['ansible_distribution']|default("none") }}</td>
+            <td>{{ hostvars[windows_host]['last_patch_date'] | default('N/A') }}</td>
         </tr>
 {% endfor %}
     </tbody>
 </table>
-<center><p>Created with</p><br><img src="webpage_logo.png" width="300">
-</center>
+<center><p>Created with</p><br><img src="webpage_logo.png" width="300"></center>
 </section>
 </div>
 </body>
