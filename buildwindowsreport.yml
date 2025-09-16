@@ -1,13 +1,18 @@
 ---
 - name: Create Windows Report
   hosts: windows
+  gather_facts: yes
+  vars:
+    # Ensure you define 'detailedreport' as needed in your inventory or extra-vars
+    # detailedreport: true  # Uncomment or set as appropriate
+
   tasks:
 
     - name: Scan Systems for detailed report
       include_role:
         name: shadowman_scan_systems
-      when: detailedreport
+      when: detailedreport | default(false)
 
-    - name: Build the repor
+    - name: Build the report
       include_role:
         name: build_report_windows
