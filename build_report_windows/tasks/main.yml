@@ -1,49 +1,32 @@
-# Commented out because not applicable on Windows hosts
-# - name: Ensure Apache is installed
-#   ansible.builtin.yum:
-#     name: httpd
-#     state: present
-
-# - name: Ensure Apache is started
-#   ansible.builtin.service:
-#     name: httpd
-#     state: started
+- name: Ensure report directory exists
+  ansible.windows.win_file:
+    path: "{{ file_path }}"
+    state: directory
 
 - name: Create HTML report if jinja include works
-  ansible.builtin.template:
+  ansible.windows.win_template:
     src: report.j2
-    dest: "{{ file_path }}/windows.html"
-    owner: root
-    group: root
-    mode: '0644'
+    dest: "{{ file_path }}\\windows.html"
   when: not usesingletemplate
 
 - name: Create HTML report if jinja include doesn't work
-  ansible.builtin.template:
+  ansible.windows.win_template:
     src: fullreport.j2
-    dest: "{{ file_path }}/windows.html"
-    owner: root
-    group: root
-    mode: '0644'
+    dest: "{{ file_path }}\\windows.html"
   when: usesingletemplate
 
 - name: Copy CSS over
-  ansible.builtin.copy:
-    src: "css"
-    dest: "{{ file_path }}"
-    directory_mode: true
-    owner: root
-    group: root
-    mode: '0644'
+  ansible.windows.win_copy:
+    src: css
+    dest: "{{ file_path }}\\css"
+    remote_src: no
+    recurse: yes
 
 - name: Copy logos over
-  ansible.builtin.copy:
+  ansible.windows.win_copy:
     src: "{{ item }}"
-    dest: "{{ file_path }}"
-    directory_mode: true
-    owner: root
-    group: root
-    mode: '0644'
+    dest: "{{ file_path }}\\{{ item }}"
+    remote_src: no
   loop:
     - "webpage_logo.png"
     - "redhat-ansible-logo.svg"
