@@ -5,163 +5,261 @@
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <link rel="stylesheet" href="css/new.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
-<script>
-$(function() {
-$( "#accordion > div" ).accordion({
-    header: "h3",
-    active: false,
-collapsible: true
-});
-});
-</script>
-<script>
-        (function(document) {
-            'use strict';
+  <style>
+    /* Card styling similar to your Linux report */
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+      margin: 1rem auto;
+      padding: 1rem 1.5rem;
+      max-width: 900px;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .card-header img.server-icon {
+      width: 40px;
+      height: 40px;
+    }
+    .hostname {
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin: 0;
+    }
+    .status-badge {
+      background-color: #28a745;
+      color: white;
+      border-radius: 12px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .info-line {
+      font-size: 0.9rem;
+      margin: 0.3rem 0;
+    }
+    .info-line strong {
+      margin-right: 0.25rem;
+    }
+    .accordion-header {
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #f7f7f7;
+      margin-top: 0.75rem;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .accordion-content {
+      display: none;
+      padding: 0.75rem 1rem;
+      border: 1px solid #ccc;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      background: #fff;
+      overflow-x: auto;
+    }
+    .accordion-content table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .accordion-content th,
+    .accordion-content td {
+      border: 1px solid #ddd;
+      padding: 0.4rem 0.6rem;
+      text-align: left;
+    }
+    .accordion-content th {
+      background-color: #f0f0f0;
+    }
+    .toggle-icon {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+    .accordion-header.active .toggle-icon {
+      transform: rotate(90deg);
+    }
+    /* Search input styling */
+    .search-container {
+      max-width: 900px;
+      margin: 1rem auto;
+      text-align: center;
+    }
+    .search-input {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      width: 300px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    /* Download CSV button */
+    .download-csv {
+      float: right;
+      margin: 1rem 2rem 0 0;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      user-select: none;
+    }
+    .download-csv:hover {
+      background-color: #0056b3;
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Accordion toggle
+    $(document).ready(function(){
+      $('.accordion-header').click(function(){
+        $(this).toggleClass('active');
+        $(this).next('.accordion-content').slideToggle(200);
+      });
 
-            var TableFilter = (function(myArray) {
-                var search_input;
+      // Search filter
+      $('.search-input').on('input', function(){
+        var val = $(this).val().toLowerCase();
+        $('.card').each(function(){
+          var hostname = $(this).find('.hostname').text().toLowerCase();
+          if(hostname.indexOf(val) > -1){
+            $(this).show();
+          } else {
+            $(this).hide();
+          }
+        });
+      });
 
-                function _onInputSearch(e) {
-                    search_input = e.target;
-                    var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
-                    myArray.forEach.call(tables, function(table) {
-                        myArray.forEach.call(table.tBodies, function(tbody) {
-                            myArray.forEach.call(tbody.rows, function(row) {
-                                var text_content = row.textContent.toLowerCase();
-                                var search_val = search_input.value.toLowerCase();
-                                row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
-                            });
-                        });
-                    });
-                }
-
-                return {
-                    init: function() {
-                        var inputs = document.getElementsByClassName('search-input');
-                        myArray.forEach.call(inputs, function(input) {
-                            input.oninput = _onInputSearch;
-                        });
-                    }
-                };
-            })(Array.prototype);
-
-            document.addEventListener('readystatechange', function() {
-                if (document.readyState === 'complete') {
-                    TableFilter.init();
-                }
-            });
-
-        })(document);
-    </script>
+      // CSV download placeholder (you can integrate your logic here)
+      $('#download-csv').click(function(){
+        alert('CSV download feature to be implemented.');
+      });
+    });
+  </script>
 </head>
 <body>
-<div class="wrapper">
-    <header>
-    <div class="header-container">
-      <a href="https://ansible.com">
-        <img
-          class="header-logo"
-          src="redhat-ansible-logo.svg"
-          title="Red Hat Ansible"
-          alt="Red Hat Ansible"
-        />
-      </a>
+  <div style="background:#000; padding: 1rem 2rem; color: white; display:flex; justify-content: space-between; align-items: center;">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <img src="redhat-ansible-logo.svg" alt="Red Hat Ansible" style="height: 40px;">
+      <h2 style="margin:0;">Ansible Windows Automation Report</h2>
     </div>
-  </header>
-<section>
-<center>
-<h1>Ansible Windows Automation Report</h1>
-<h3><input type="search" placeholder="Search..." class="form-control search-input" data-table="main_net_table"/>
-</center>
-<table class="table table-striped mt32 main_net_table">
-    <thead>
-        <tr>
-            <th>Windows Device</th>
-            <th>Operating System</th>
-            <th>Operating System Kernel Version</th>
-            <th>Last Patch Date</th>
-        </tr>
-    </thead>
-    <tbody>
-{% for windows_host in ansible_play_hosts|sort %}
-        <tr>
-            <td class="summary_info">
-              <div id="hostname">
-                <p class="hostname">
-                  <img class="router_image" src="server.png"> {{ hostvars[windows_host]['ansible_hostname'] }}</p>
-                </div>
-<!-- INTERNAL TABLE FOR PACKAGES -->
-<div id="accordion">
-<div class="ui-accordion ui-widget ui-helper-reset" role="tablist">
-<h3 class="ui-accordion-header ui-corner-top ui-state-default ui-accordion-icons ui-accordion-header-collapsed ui-corner-all" role="tab" id="ui-id-3" aria-controls="ui-id-4" aria-selected="false" aria-expanded="false" tabindex="0">Package Facts</h3>
-<div class="net_content ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" id="ui-id-4" aria-labelledby="ui-id-3" role="tabpanel" aria-hidden="true" style="display: none; height: 194px;">
-<table id="subtable" class="sortable">
-    <thead>
-        <tr>
+    <button id="download-csv" class="download-csv">Download CSV</button>
+  </div>
+
+  <div class="search-container">
+    <input type="search" placeholder="Search hosts..." class="search-input" />
+  </div>
+
+  {% for windows_host in ansible_play_hosts|sort %}
+  <div class="card" data-host="{{ hostvars[windows_host]['inventory_hostname'].split('.')[0] }}">
+    <div class="card-header">
+      <img src="server.png" alt="Server" class="server-icon"/>
+      <p class="hostname">{{ hostvars[windows_host]['inventory_hostname'].split('.')[0] }}</p>
+      <span class="status-badge">Up-to-date</span>
+    </div>
+    <p class="info-line"><strong>Package Manager:</strong> {{ hostvars[windows_host]['package_manager']|default("dnf") }} &nbsp;&nbsp;
+      <strong>OS:</strong> {{ hostvars[windows_host]['ansible_distribution']|default("none") }} &nbsp;&nbsp;
+      <strong>Kernel:</strong> {{ hostvars[windows_host]['ansible_kernel']|default("none") }}
+    </p>
+
+    <!-- Last Patch Info Accordion -->
+    <div class="accordion-header">Last Patch Info <span class="toggle-icon">&#9654;</span></div>
+    <div class="accordion-content">
+      {% if hostvars[windows_host]['last_patch_info'] is defined %}
+        <table>
+          <thead>
+            <tr>
+              <th>Patch Name</th>
+              <th>Date Installed</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for patch in hostvars[windows_host]['last_patch_info'] %}
+            <tr>
+              <td>{{ patch.name }}</td>
+              <td>{{ patch.installed_date }}</td>
+              <td>{{ patch.description }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No patch information available.</p>
+      {% endif %}
+    </div>
+
+    <!-- Package Facts Accordion -->
+    <div class="accordion-header">Package Facts <span class="toggle-icon">&#9654;</span></div>
+    <div class="accordion-content">
+      {% if hostvars[windows_host]['packages'] is defined %}
+      <table>
+        <thead>
+          <tr>
             <th>Package Name</th>
             <th>Version</th>
             <th>Publisher</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% if hostvars[windows_host]['packages'] is defined %}
-    {% for package in hostvars[windows_host]['packages'] %}
-        <tr>
-            <td>{{package['name']}}</td>
-            <td>{{package['version']}}</td>
-            <td>{{package['publisher']}}</td>
-        </tr>
-    {% endfor %}
-    {% endif %}
-    </tbody>
-</table>
-</div>
-</div>
-</div>
-<!-- END INTERNAL TABLE FOR PACKAGES -->
-<!-- INTERNAL TABLE FOR SERVICES -->
-<div id="accordion">
-<div class="ui-accordion ui-widget ui-helper-reset" role="tablist">
-<h3 class="ui-accordion-header ui-corner-top ui-state-default ui-accordion-icons ui-accordion-header-collapsed ui-corner-all" role="tab" id="ui-id-3" aria-controls="ui-id-4" aria-selected="false" aria-expanded="false" tabindex="0">Services Facts</h3>
-<div class="net_content ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" id="ui-id-4" aria-labelledby="ui-id-3" role="tabpanel" aria-hidden="true" style="display: none; height: 194px;">
-<table id="subtable" class="sortable">
-    <thead>
-        <tr>
+          </tr>
+        </thead>
+        <tbody>
+        {% for package in hostvars[windows_host]['packages'] %}
+          <tr>
+            <td>{{ package.name }}</td>
+            <td>{{ package.version }}</td>
+            <td>{{ package.publisher }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <p>No package information available.</p>
+      {% endif %}
+    </div>
+
+    <!-- Services Facts Accordion -->
+    <div class="accordion-header">Services Facts <span class="toggle-icon">&#9654;</span></div>
+    <div class="accordion-content">
+      {% if hostvars[windows_host]['services'] is defined %}
+      <table>
+        <thead>
+          <tr>
             <th>Display Name</th>
-            <th>Windows Services Name</th>
+            <th>Windows Service Name</th>
             <th>State</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% if hostvars[windows_host]['services'] is defined %}
-    {% for service in hostvars[windows_host]['services'] %}
-        <tr>
-            <td>{{service['name']}}</td>
-            <td>{{service['win_svc_name']}}</td>
-            <td>{{service['state']}}</td>
-        </tr>
-    {% endfor %}
-    {% endif %}
-    </tbody>
-</table>
-</div>
-</div>
-</div>
-<!-- END INTERNAL TABLE FOR SERVICES -->
-            </td>
-            <td>{{ hostvars[windows_host]['ansible_os_family'] | default("none") }}</td>
-            <td>{{ hostvars[windows_host]['ansible_distribution'] | default("none") }}</td>
-            <td>{{ hostvars[windows_host]['last_patch_date'] | default('N/A') }}</td>
-        </tr>
-{% endfor %}
-    </tbody>
-</table>
-<center><p>Created with</p><br><img src="webpage_logo.png" width="300"></center>
-</section>
-</div>
+          </tr>
+        </thead>
+        <tbody>
+        {% for service in hostvars[windows_host]['services'] %}
+          <tr>
+            <td>{{ service.name }}</td>
+            <td>{{ service.win_svc_name }}</td>
+            <td>{{ service.state }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <p>No services information available.</p>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+  <center style="margin: 2rem 0;">
+    <p>Created with</p>
+    <img src="webpage_logo.png" width="300" alt="Report Logo"/>
+  </center>
 </body>
 </html>
