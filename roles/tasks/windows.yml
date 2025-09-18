@@ -30,3 +30,13 @@
   set_fact:
     last_applied_patches: "{{ last_applied_patches.updates }}"
   when: ansible_os_family == "Windows"
+
+- name: Debug required updates fact
+  debug:
+    var: required_updates
+  when: ansible_os_family == "Windows"
+
+- name: Debug last applied patches fact
+  debug:
+    var: last_applied_patches
+  when: ansible_os_family == "Windows"
