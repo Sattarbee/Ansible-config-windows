@@ -52,14 +52,14 @@
       </tr>
     </thead>
     <tbody>
-      {% for windows_host in ansible_play_hosts|sort %}
+      {% for windows_host in ansible_play_hosts | sort %}
       <tr>
-        <td>{{ hostvars[windows_host]['inventory_hostname']|default(windows_host) }}</td>
-        <td>{{ hostvars[windows_host]['ansible_distribution']|default('N/A') }}</td>
+        <td>{{ hostvars[windows_host]['inventory_hostname'] | default(windows_host) }}</td>
+        <td>{{ hostvars[windows_host]['ansible_distribution'] | default('N/A') }} {{ hostvars[windows_host]['ansible_distribution_version'] | default('') }}</td>
         <td>
-          {% if hostvars[windows_host]['required_updates'] is defined and hostvars[windows_host]['required_updates'] %}
+          {% if required_updates is defined and required_updates[windows_host] is defined and required_updates[windows_host] %}
             <ul>
-              {% for patch in hostvars[windows_host]['required_updates'] %}
+              {% for patch in required_updates[windows_host] %}
               <li>
                 {{ patch.name }}{% if patch.installed_date %} (Installed: {{ patch.installed_date }}){% endif %}
               </li>
@@ -70,9 +70,9 @@
           {% endif %}
         </td>
         <td>
-          {% if hostvars[windows_host]['last_applied_patches'] is defined and hostvars[windows_host]['last_applied_patches'] %}
+          {% if last_applied_patches is defined and last_applied_patches[windows_host] is defined and last_applied_patches[windows_host] %}
             <ul>
-              {% for patch in hostvars[windows_host]['last_applied_patches'] %}
+              {% for patch in last_applied_patches[windows_host] %}
               <li>
                 {{ patch.name }}{% if patch.installed_date %} (Installed: {{ patch.installed_date }}){% endif %}
               </li>
