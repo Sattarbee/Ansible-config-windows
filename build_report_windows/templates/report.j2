@@ -14,49 +14,49 @@ $(function() {
 $( "#accordion > div" ).accordion({
     header: "h3",
     active: false,
-collapsible: true
+    collapsible: true
 });
 });
 </script>
 <script>
-        (function(document) {
-            'use strict';
+    (function(document) {
+        'use strict';
 
-            var TableFilter = (function(myArray) {
-                var search_input;
+        var TableFilter = (function(myArray) {
+            var search_input;
 
-                function _onInputSearch(e) {
-                    search_input = e.target;
-                    var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
-                    myArray.forEach.call(tables, function(table) {
-                        myArray.forEach.call(table.tBodies, function(tbody) {
-                            myArray.forEach.call(tbody.rows, function(row) {
-                                var text_content = row.textContent.toLowerCase();
-                                var search_val = search_input.value.toLowerCase();
-                                row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
-                            });
+            function _onInputSearch(e) {
+                search_input = e.target;
+                var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+                myArray.forEach.call(tables, function(table) {
+                    myArray.forEach.call(table.tBodies, function(tbody) {
+                        myArray.forEach.call(tbody.rows, function(row) {
+                            var text_content = row.textContent.toLowerCase();
+                            var search_val = search_input.value.toLowerCase();
+                            row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
                         });
                     });
+                });
+            }
+
+            return {
+                init: function() {
+                    var inputs = document.getElementsByClassName('search-input');
+                    myArray.forEach.call(inputs, function(input) {
+                        input.oninput = _onInputSearch;
+                    });
                 }
+            };
+        })(Array.prototype);
 
-                return {
-                    init: function() {
-                        var inputs = document.getElementsByClassName('search-input');
-                        myArray.forEach.call(inputs, function(input) {
-                            input.oninput = _onInputSearch;
-                        });
-                    }
-                };
-            })(Array.prototype);
+        document.addEventListener('readystatechange', function() {
+            if (document.readyState === 'complete') {
+                TableFilter.init();
+            }
+        });
 
-            document.addEventListener('readystatechange', function() {
-                if (document.readyState === 'complete') {
-                    TableFilter.init();
-                }
-            });
-
-        })(document);
-    </script>
+    })(document);
+</script>
 </head>
 <body>
 <div class="wrapper">
@@ -73,6 +73,7 @@ collapsible: true
             <th>Operating System</th>
             <th>Operating System Kernel Version</th>
             <th>Last Patch Date</th>
+            <th>KB Updates</th>  <!-- New column header -->
         </tr>
     </thead>
     <tbody>
@@ -91,6 +92,17 @@ collapsible: true
             <td>{{ hostvars[windows_host]['ansible_os_family']|default("none") }}</td>
             <td>{{ hostvars[windows_host]['ansible_distribution']|default("none") }}</td>
             <td>{{ hostvars[windows_host]['last_patch_date'] | default('N/A') }}</td>
+            <td>
+              {% if hostvars[windows_host]['kb_updates'] is defined and hostvars[windows_host]['kb_updates'] %}
+                <ul>
+                  {% for kb in hostvars[windows_host]['kb_updates'] %}
+                    <li>{{ kb }}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                N/A
+              {% endif %}
+            </td>
         </tr>
 {% endfor %}
     </tbody>
