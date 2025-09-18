@@ -38,6 +38,10 @@
       font-size: 0.85rem;
       color: #666;
     }
+    small {
+      color: #555;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -61,7 +65,13 @@
             <ul>
               {% for patch in required_updates_dict[windows_host] %}
               <li>
-                {{ patch.name }}{% if patch.installed_date %} (Installed: {{ patch.installed_date }}){% endif %}
+                {{ patch.name }}
+                {% if patch.kbs %}
+                  <br><small>KB(s): {{ patch.kbs | join(', ') }}</small>
+                {% endif %}
+                {% if patch.installed_date %}
+                  <br><small>Installed: {{ patch.installed_date }}</small>
+                {% endif %}
               </li>
               {% endfor %}
             </ul>
@@ -74,7 +84,13 @@
             <ul>
               {% for patch in last_applied_patches_dict[windows_host] %}
               <li>
-                {{ patch.name }}{% if patch.installed_date %} (Installed: {{ patch.installed_date }}){% endif %}
+                {{ patch.name }}
+                {% if patch.kbs %}
+                  <br><small>KB(s): {{ patch.kbs | join(', ') }}</small>
+                {% endif %}
+                {% if patch.installed_date %}
+                  <br><small>Installed: {{ patch.installed_date }}</small>
+                {% endif %}
               </li>
               {% endfor %}
             </ul>
