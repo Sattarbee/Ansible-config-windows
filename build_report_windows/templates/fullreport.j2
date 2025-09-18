@@ -84,10 +84,26 @@
           {% endif %}
         </td>
         <td>
-          {% if required_updates_dict is defined and required_updates_dict[windows_host] is defined and required_updates_dict[windows_host] %}
+          {# Show KBs from both required_updates and last_applied_patches #}
+          {% set kb_list = [] %}
+          {% if required_updates_dict is defined and required_updates_dict[windows_host] is defined %}
+            {% for patch in required_updates_dict[windows_host] %}
+              {% if patch.kb and patch.kb != 'N/A' %}
+                {% set _ = kb_list.append(patch.kb) %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          {% if last_applied_patches_dict is defined and last_applied_patches_dict[windows_host] is defined %}
+            {% for patch in last_applied_patches_dict[windows_host] %}
+              {% if patch.kb and patch.kb != 'N/A' and patch.kb not in kb_list %}
+                {% set _ = kb_list.append(patch.kb) %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          {% if kb_list %}
             <ul>
-              {% for patch in required_updates_dict[windows_host] %}
-                <li>{{ patch.kb | join(', ') if patch.kb is defined else 'N/A' }}</li>
+              {% for kb in kb_list %}
+              <li>{{ kb }}</li>
               {% endfor %}
             </ul>
           {% else %}
