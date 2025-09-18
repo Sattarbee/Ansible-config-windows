@@ -6,3 +6,39 @@
 - name: "Scan services (Windows)"
   shadowman.reports.win_scan_services:
   when: ansible_os_family == "Windows"
+
+- name: Scan for available updates (no install)
+  ansible.windows.win_updates:
+    state: searched
+  register: scan_updates
+  when: ansible_os_family == "Windows"
+
+- name: Set required_updates fact on each host
+  set_fact:
+    required_updates: >-
+      [{% for u in scan_updates.updates.values() %}
+        {
+          "name": "{{ u.title }}",
+          "installed_date": "",
+          "kb": {{ u.kb | default([]) | to_json }}
+        }{% if not loop.last %},{% endif %}
+      {% endfor %}]
+  when: ansible_os_family == "Windows"
+
+- name: Get installed hotfixes/patches
+  ansible.windows.win_shell: |
+    Get-HotFix | Select-Object HotFixID, Description, InstalledOn | ConvertTo-Json -Depth 3
+  register: installed_hotfixes
+  when: ansible_os_family == "Windows"
+
+- name: Set last_applied_patches fact on each host
+  set_fact:
+    last_applied_patches: >-
+      [{% for patch in (installed_hotfixes.stdout | from_json) %}
+        {
+          "name": "{{ patch.HotFixID }} - {{ patch.Description }}",
+          "installed_date": "{{ patch.InstalledOn }}",
+          "kb": [ "{{ patch.HotFixID }}" ]
+        }{% if not loop.last %},{% endif %}
+      {% endfor %}]
+  when: ansible_os_family == "Windows"
