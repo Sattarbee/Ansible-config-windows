@@ -3,34 +3,11 @@
     path: "C:\\Users\\p-sve7fz\\Desktop"
     state: directory
 
-- name: Parse KB numbers for required_updates
-  set_fact:
-    required_updates: >-
-      [{% for update in required_updates | default([]) %}
-        {
-          "name": "{{ update.name | default('N/A') }}",
-          "installed_date": "{{ update.installed_date | default('') }}",
-          "kb": "{{ (update.name | default('') | regex_search('KB[0-9]+', ignorecase=True)) | default('N/A') }}"
-        }{% if not loop.last %},{% endif %}
-      {% endfor %}]
-
-- name: Parse KB numbers for last_applied_patches
-  set_fact:
-    last_applied_patches: >-
-      [{% for update in last_applied_patches | default([]) %}
-        {
-          "name": "{{ update.name | default('N/A') }}",
-          "installed_date": "{{ update.installed_date | default('') }}",
-          "kb": "{{ (update.name | default('') | regex_search('KB[0-9]+', ignorecase=True)) | default('N/A') }}"
-        }{% if not loop.last %},{% endif %}
-      {% endfor %}]
-
 - name: Aggregate required_updates from all hosts
   ansible.builtin.set_fact:
     required_updates_dict: >-
       {{
-        dict(ansible_play_hosts | map('extract', hostvars, 'required_updates')
-        | zip(ansible_play_hosts))
+        dict(ansible_play_hosts | zip(ansible_play_hosts | map('extract', hostvars, 'required_updates')))
       }}
   run_once: true
 
@@ -38,8 +15,7 @@
   ansible.builtin.set_fact:
     last_applied_patches_dict: >-
       {{
-        dict(ansible_play_hosts | map('extract', hostvars, 'last_applied_patches')
-        | zip(ansible_play_hosts))
+        dict(ansible_play_hosts | zip(ansible_play_hosts | map('extract', hostvars, 'last_applied_patches')))
       }}
   run_once: true
 
