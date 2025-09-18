@@ -38,10 +38,6 @@
       font-size: 0.85rem;
       color: #666;
     }
-    small {
-      color: #555;
-      font-style: italic;
-    }
   </style>
 </head>
 <body>
@@ -53,6 +49,7 @@
         <th>Operating System</th>
         <th>Required Updates</th>
         <th>Last Applied Patches</th>
+        <th>KB Updates</th>
       </tr>
     </thead>
     <tbody>
@@ -65,13 +62,7 @@
             <ul>
               {% for patch in required_updates_dict[windows_host] %}
               <li>
-                {{ patch.name }}
-                {% if patch.kbs %}
-                  <br><small>KB(s): {{ patch.kbs | join(', ') }}</small>
-                {% endif %}
-                {% if patch.installed_date %}
-                  <br><small>Installed: {{ patch.installed_date }}</small>
-                {% endif %}
+                {{ patch.name }}{% if patch.installed_date %} (Installed: {{ patch.installed_date }}){% endif %}
               </li>
               {% endfor %}
             </ul>
@@ -84,18 +75,23 @@
             <ul>
               {% for patch in last_applied_patches_dict[windows_host] %}
               <li>
-                {{ patch.name }}
-                {% if patch.kbs %}
-                  <br><small>KB(s): {{ patch.kbs | join(', ') }}</small>
-                {% endif %}
-                {% if patch.installed_date %}
-                  <br><small>Installed: {{ patch.installed_date }}</small>
-                {% endif %}
+                {{ patch.name }}{% if patch.installed_date %} (Installed: {{ patch.installed_date }}){% endif %}
               </li>
               {% endfor %}
             </ul>
           {% else %}
             No patches applied last time.
+          {% endif %}
+        </td>
+        <td>
+          {% if required_updates_dict is defined and required_updates_dict[windows_host] is defined and required_updates_dict[windows_host] %}
+            <ul>
+              {% for patch in required_updates_dict[windows_host] %}
+                <li>{{ patch.kb | join(', ') if patch.kb is defined else 'N/A' }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            No KB data available.
           {% endif %}
         </td>
       </tr>
