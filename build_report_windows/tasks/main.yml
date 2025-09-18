@@ -3,27 +3,21 @@
     path: "C:\\Users\\p-sve7fz\\Desktop"
     state: directory
 
-- name: Aggregate required_updates from all hosts safely
+- name: Initialize required_updates_dict
   ansible.builtin.set_fact:
-    required_updates_dict: >-
-      {{
-        dict(
-          (host, hostvars[host].required_updates if 'required_updates' in hostvars[host] else [])
-          for host in ansible_play_hosts
-        )
-      }}
-  run_once: true
+    required_updates_dict: {}
 
-- name: Aggregate last_applied_patches from all hosts safely
+- name: Initialize last_applied_patches_dict
   ansible.builtin.set_fact:
-    last_applied_patches_dict: >-
-      {{
-        dict(
-          (host, hostvars[host].last_applied_patches if 'last_applied_patches' in hostvars[host] else [])
-          for host in ansible_play_hosts
-        )
-      }}
-  run_once: true
+    last_applied_patches_dict: {}
+
+- name: Collect required_updates per host
+  ansible.builtin.set_fact:
+    required_updates_dict: "{{ required_updates_dict | combine({inventory_hostname: required_updates | default([])}) }}"
+
+- name: Collect last_applied_patches per host
+  ansible.builtin.set_fact:
+    last_applied_patches_dict: "{{ last_applied_patches_dict | combine({inventory_hostname: last_applied_patches | default([])}) }}"
 
 - name: Debug selected template (forced to fullreport.j2)
   ansible.builtin.debug:
