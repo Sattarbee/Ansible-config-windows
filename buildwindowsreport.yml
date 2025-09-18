@@ -1,6 +1,8 @@
 ---
 - name: Create Windows Report
   hosts: windows
+  vars:
+    detailedreport: 'False'  # or 'True' as needed
   tasks:
 
     - name: Scan Systems for detailed report
@@ -12,3 +14,4 @@
       ansible.builtin.include_role:
         name: build_report_windows
       run_once: true
+
