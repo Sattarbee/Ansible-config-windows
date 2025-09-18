@@ -3,19 +3,25 @@
     path: "C:\\Users\\p-sve7fz\\Desktop"
     state: directory
 
-- name: Aggregate required_updates from all hosts
+- name: Aggregate required_updates from all hosts safely
   ansible.builtin.set_fact:
     required_updates_dict: >-
       {{
-        dict(ansible_play_hosts | zip(ansible_play_hosts | map('extract', hostvars, 'required_updates')))
+        dict(
+          (host, hostvars[host].required_updates if 'required_updates' in hostvars[host] else [])
+          for host in ansible_play_hosts
+        )
       }}
   run_once: true
 
-- name: Aggregate last_applied_patches from all hosts
+- name: Aggregate last_applied_patches from all hosts safely
   ansible.builtin.set_fact:
     last_applied_patches_dict: >-
       {{
-        dict(ansible_play_hosts | zip(ansible_play_hosts | map('extract', hostvars, 'last_applied_patches')))
+        dict(
+          (host, hostvars[host].last_applied_patches if 'last_applied_patches' in hostvars[host] else [])
+          for host in ansible_play_hosts
+        )
       }}
   run_once: true
 
