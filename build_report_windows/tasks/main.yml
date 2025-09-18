@@ -3,15 +3,35 @@
     path: "C:\\Users\\p-sve7fz\\Desktop"
     state: directory
 
+- name: Collect required_updates from all hosts
+  ansible.builtin.set_fact:
+    required_updates_dict: >-
+      {{
+        required_updates_dict | default({}) | combine({
+          inventory_hostname: hostvars[inventory_hostname].required_updates | default([])
+        })
+      }}
+
+- name: Collect last_applied_patches from all hosts
+  ansible.builtin.set_fact:
+    last_applied_patches_dict: >-
+      {{
+        last_applied_patches_dict | default({}) | combine({
+          inventory_hostname: hostvars[inventory_hostname].last_applied_patches | default([])
+        })
+      }}
+
 - name: Debug selected template (forced to fullreport.j2)
   ansible.builtin.debug:
     msg: "Using template: fullreport.j2"
 
-# Force usage of fullreport.j2 (ignore usesingletemplate temporarily)
 - name: Create HTML report using fullreport.j2
   ansible.windows.win_template:
     src: fullreport.j2
     dest: "C:\\Users\\p-sve7fz\\Desktop\\windows.html"
+  vars:
+    required_updates: "{{ required_updates_dict }}"
+    last_applied_patches: "{{ last_applied_patches_dict }}"
 
 - name: Copy CSS directory over
   ansible.windows.win_copy:
