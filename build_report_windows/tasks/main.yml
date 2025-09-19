@@ -1,3 +1,4 @@
+---
 - name: Ensure report directory exists
   ansible.windows.win_file:
     path: "C:\\Users\\p-sve7fz\\Desktop"
@@ -37,4 +38,9 @@
   ansible.windows.win_shell: iisreset
   args:
     warn: false
+  run_once: true
+
+- name: Display link to inventory report
+  ansible.builtin.debug:
+    msg: "Please go to http://{{ ansible_host }}/windows.html"
   run_once: true
