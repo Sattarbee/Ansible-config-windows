@@ -48,6 +48,7 @@
         <th>Hostname</th>
         <th>Operating System</th>
         <th>Required Updates</th>
+        <th>Last Patch Date</th>
         <th>Last Applied Patches</th>
         <th>KB Updates</th>
       </tr>
@@ -55,27 +56,29 @@
     <tbody>
       {% for windows_host in ansible_play_hosts | sort %}
       <tr>
-        <!-- Hostname -->
         <td>{{ hostvars[windows_host]['inventory_hostname'] | default(windows_host) }}</td>
-
-        <!-- Operating System -->
-        <td>
-          {{ hostvars[windows_host]['ansible_distribution'] | default('N/A') }}
-          {{ hostvars[windows_host]['ansible_distribution_version'] | default('') }}
-        </td>
+        <td>{{ hostvars[windows_host]['ansible_distribution'] | default('N/A') }} {{ hostvars[windows_host]['ansible_distribution_version'] | default('') }}</td>
 
         <!-- Required Updates -->
         <td>
           {% if required_updates_dict is defined and required_updates_dict[windows_host] is defined and required_updates_dict[windows_host] %}
             <ul>
               {% for patch in required_updates_dict[windows_host] %}
-              <li>
-                {{ patch.name }}{% if patch.installed_date %} (Installed: {{ patch.installed_date }}){% endif %}
-              </li>
+              <li>{{ patch.title | default(patch.name) }}</li>
               {% endfor %}
             </ul>
           {% else %}
             No updates required.
+          {% endif %}
+        </td>
+
+        <!-- Last Patch Date -->
+        <td>
+          {% if last_applied_patches_dict is defined and last_applied_patches_dict[windows_host] is defined and last_applied_patches_dict[windows_host] %}
+            {% set last_patch = (last_applied_patches_dict[windows_host] | sort(attribute='installed_date') | last) %}
+            {{ last_patch.installed_date | default("N/A") }}
+          {% else %}
+            N/A
           {% endif %}
         </td>
 
@@ -85,8 +88,7 @@
             <ul>
               {% for patch in last_applied_patches_dict[windows_host] %}
               <li>
-                {{ patch.name | default('Unknown Patch') }}
-                {% if patch.installed_date %} (Installed: {{ patch.installed_date }}){% endif %}
+                {{ patch.name }}{% if patch.installed_date %} (Installed: {{ patch.installed_date }}){% endif %}
               </li>
               {% endfor %}
             </ul>
@@ -126,7 +128,6 @@
       {% endfor %}
     </tbody>
   </table>
-
   <div class="footer">
     Created with Ansible on {{ ansible_date_time.iso8601 | default("Unknown date") }}.
   </div>
