@@ -61,7 +61,7 @@
 <h1>Ansible Windows Automation Report</h1>
 <h3><input type="search" placeholder="Search..." class="form-control search-input" data-table="main_net_table"/>
 </center>
-<table class="table table-striped mt32 main_net_table">
+<table class="table table-striped mt32 main_net_table sortable">
     <thead>
         <tr>
             <th>Windows Device</th>
@@ -88,14 +88,29 @@
             <td>{{ hostvars[windows_host]['ansible_distribution']|default("none") }}</td>
 
             <!-- Last Patch Date -->
-            <td>{{ patch_info[windows_host]['last_patch_date'] | default('N/A') }}</td>
+            <td>
+              {% if last_applied_patches_dict is defined and last_applied_patches_dict[windows_host] is defined and last_applied_patches_dict[windows_host] %}
+                {% set last_patch = (last_applied_patches_dict[windows_host] | sort(attribute='installed_date') | last) %}
+                {{ last_patch.installed_date | default("N/A") }}
+              {% else %}
+                N/A
+              {% endif %}
+            </td>
 
             <!-- KB Updates -->
             <td>
-              {% if patch_info[windows_host]['kb_updates'] is defined and patch_info[windows_host]['kb_updates'] %}
+              {% if hostvars[windows_host]['kb_updates'] is defined and hostvars[windows_host]['kb_updates'] %}
                 <ul>
-                  {% for kb in patch_info[windows_host]['kb_updates'] %}
+                  {% for kb in hostvars[windows_host]['kb_updates'] %}
                     <li>{{ kb }}</li>
+                  {% endfor %}
+                </ul>
+              {% elif last_applied_patches_dict is defined and last_applied_patches_dict[windows_host] is defined %}
+                <ul>
+                  {% for patch in last_applied_patches_dict[windows_host] %}
+                    {% if patch.kb and patch.kb != 'N/A' %}
+                      <li>{{ patch.kb }}</li>
+                    {% endif %}
                   {% endfor %}
                 </ul>
               {% else %}
