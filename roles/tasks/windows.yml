@@ -1,8 +1,36 @@
----
 - name: "Scan packages (Windows)"
   shadowman.reports.win_scan_packages:
   when: ansible_os_family == "Windows"
 
 - name: "Scan services (Windows)"
   shadowman.reports.win_scan_services:
+  when: ansible_os_family == "Windows"
+
+# 🔹 New: Gather required updates (pending patches)
+- name: Check for required updates
+  ansible.windows.win_updates:
+    state: searched
+  register: available_updates
+  when: ansible_os_family == "Windows"
+
+- name: Save required updates
+  ansible.builtin.set_fact:
+    required_updates_dict: "{{ required_updates_dict | default({}) | combine({inventory_hostname: available_updates.updates | default([])}) }}"
+  when: ansible_os_family == "Windows"
+
+# 🔹 New: Gather installed hotfixes
+- name: Get installed hotfixes
+  ansible.windows.win_hotfix:
+  register: installed_hotfixes
+  when: ansible_os_family == "Windows"
+
+- name: Save installed patches
+  ansible.builtin.set_fact:
+    last_applied_patches_dict: "{{ last_applied_patches_dict | default({}) | combine({
+      inventory_hostname: installed_hotfixes.hotfixes | map('extract', {
+        'Description': 'name',
+        'HotFixID': 'kb',
+        'InstalledOn': 'installed_date'
+      }) | list
+    }) }}"
   when: ansible_os_family == "Windows"
