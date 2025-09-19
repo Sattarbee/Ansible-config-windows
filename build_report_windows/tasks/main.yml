@@ -1,54 +1,20 @@
----
 - name: Ensure report directory exists
   ansible.windows.win_file:
     path: "C:\\Users\\p-sve7fz\\Desktop"
     state: directory
 
-- name: Initialize required_updates_dict
-  ansible.builtin.set_fact:
-    required_updates_dict: {}
-
-- name: Initialize last_applied_patches_dict
-  ansible.builtin.set_fact:
-    last_applied_patches_dict: {}
-
-# 🔹 Collect required updates (if already gathered via win_updates in your role/play)
-- name: Collect required_updates per host
-  ansible.builtin.set_fact:
-    required_updates_dict: "{{ required_updates_dict | combine({inventory_hostname: required_updates | default([])}) }}"
-
-# 🔹 Gather installed hotfixes from each Windows host
-- name: Get installed hotfixes
-  ansible.windows.win_hotfix:
-    state: present
-  register: installed_hotfixes
-
-# 🔹 Transform hotfix output into last_applied_patches_dict
-- name: Collect last_applied_patches per host
-  ansible.builtin.set_fact:
-    last_applied_patches_dict: "{{ last_applied_patches_dict | combine({
-      inventory_hostname: installed_hotfixes.hotfixes | map('extract', {
-        'Description': 'name',
-        'HotFixID': 'kb',
-        'InstalledOn': 'installed_date'
-      }) | list
-    }) }}"
-
-- name: Debug selected template (forced to fullreport.j2)
+- name: Debug template selection
   ansible.builtin.debug:
     msg: "Using template: fullreport.j2"
   run_once: true
 
-- name: Create HTML report using fullreport.j2
+- name: Create HTML report
   ansible.windows.win_template:
     src: fullreport.j2
     dest: "C:\\Users\\p-sve7fz\\Desktop\\windows.html"
-  vars:
-    required_updates_dict: "{{ required_updates_dict }}"
-    last_applied_patches_dict: "{{ last_applied_patches_dict }}"
   run_once: true
 
-- name: Copy CSS directory over
+- name: Copy CSS directory
   ansible.windows.win_copy:
     src: css
     dest: "C:\\Users\\p-sve7fz\\Desktop\\css"
@@ -56,7 +22,7 @@
     recurse: yes
   run_once: true
 
-- name: Copy logos over
+- name: Copy logos
   ansible.windows.win_copy:
     src: "{{ item }}"
     dest: "C:\\Users\\p-sve7fz\\Desktop\\{{ item }}"
@@ -71,9 +37,4 @@
   ansible.windows.win_shell: iisreset
   args:
     warn: false
-  run_once: true
-
-- name: Display link to inventory report
-  ansible.builtin.debug:
-    msg: "Please go to http://{{ ansible_host }}/windows.html"
   run_once: true
