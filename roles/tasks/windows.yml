@@ -1,3 +1,4 @@
+---
 - name: "Scan packages (Windows)"
   shadowman.reports.win_scan_packages:
   when: ansible_os_family == "Windows"
@@ -6,7 +7,7 @@
   shadowman.reports.win_scan_services:
   when: ansible_os_family == "Windows"
 
-# 🔹 New: Gather required updates (pending patches)
+# 🔹 Gather required updates (pending patches)
 - name: Check for required updates
   ansible.windows.win_updates:
     state: searched
@@ -15,10 +16,12 @@
 
 - name: Save required updates
   ansible.builtin.set_fact:
-    required_updates_dict: "{{ required_updates_dict | default({}) | combine({inventory_hostname: available_updates.updates | default([])}) }}"
+    required_updates_dict: "{{ required_updates_dict | default({}) | combine({
+      inventory_hostname: available_updates.updates | default([])
+    }) }}"
   when: ansible_os_family == "Windows"
 
-# 🔹 New: Gather installed hotfixes
+# 🔹 Gather installed hotfixes
 - name: Get installed hotfixes
   ansible.windows.win_hotfix:
   register: installed_hotfixes
